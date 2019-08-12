@@ -1,0 +1,5 @@
+ip = '<IP>'
+db = '<dbname>'
+db_user = '<user>'
+db_password = '<password>'
+db_host = 'https://example.com'

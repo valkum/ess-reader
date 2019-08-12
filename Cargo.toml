@@ -1,0 +1,22 @@
+[package]
+name = "ess-reader"
+version = "0.1.0"
+authors = ["Valkum <rudi.floren@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+reqwest = "0.9.0"
+select = {git = "https://github.com/valkum/select.rs", version = "0.5.0"}
+
+confy = "0.3.0"
+structopt = "0.2.0"
+prettytable-rs = "0.8.0"
+
+failure = "0.1.0"
+serde = "1.0.0"
+chrono = "0.4.0"
+influxdb = { git = "https://github.com/valkum/influxdb-rust", version = "0.0.4" }
+tokio = "0.1.0"
+futures = "0.1.0"
