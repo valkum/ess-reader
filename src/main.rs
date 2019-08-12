@@ -4,8 +4,9 @@ use prettytable::{Table, row, cell, table};
 use failure::Error;
 
 use ess_reader::{Config, CurrentStats, BackendClient};
-
-
+use fern;
+use log;
+use log::debug;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "example", about = "An example of StructOpt usage.")]
@@ -33,21 +34,47 @@ struct CmdArgs {
 
 
 fn main() {
+    
     let mut cfg: Config = confy::load("ess_reader").unwrap();
 
     let args = CmdArgs::from_args();
     if let Some(ref ip) = args.ip {
         cfg.ip = ip.clone();
     }
-    cfg.db_host = args.db_host.clone();
-    cfg.db = args.db.clone();
-    cfg.db_user = args.db_user.clone();
-    cfg.db_password = args.db_password.clone();
+
+    if args.debug {
+        fern::Dispatch::new()
+        .format(|out, message, record| {
+            out.finish(format_args!(
+                "[{}][{}] {}",
+                record.level(),
+                record.target(),
+                message,
+            ))
+        })
+        .level(log::LevelFilter::Debug)
+        .level_for("html5ever", log::LevelFilter::Info)
+        .chain(std::io::stdout())
+        .apply();
+    }
+    if args.db_host.is_some() {
+        cfg.db_host = args.db_host.clone();
+    }
+    if args.db.is_some() {
+        cfg.db = args.db.clone();
+    }
+    if args.db_user.is_some() {
+        cfg.db_user = args.db_user.clone();
+    }
+    if args.db_password.is_some() {
+        cfg.db_password = args.db_password.clone();
+    }
    
    if cfg.ip.is_empty() {
        println!("No IP of ESS found");
        return
    }
+   debug!("{:?}", cfg);
 
     if let Err(e) = run(&cfg, &args) {
         println!("Something went wrong {}", e.as_fail());

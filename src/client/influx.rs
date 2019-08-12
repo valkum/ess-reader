@@ -5,6 +5,7 @@ use tokio;
 use crate::{Config, CurrentStats};
 use super::{BackendClient, ClientError};
 use futures::Future;
+use log::debug;
 
 pub struct InfluxClient {
     client: InfluxDbClient,
@@ -50,7 +51,7 @@ impl<'a> BackendClient<'a> for InfluxClient {
         let f2 = self.client.query(&measurement2);
         let f = f1.join(f2);
         let mut rt = tokio::runtime::current_thread::Runtime::new().unwrap();
-        
+        debug!("Send to InfluxDB");
         rt.block_on(f).map(|_| ()).map_err(|e| {
             ClientError::ConnectionError(e.to_string())
         })

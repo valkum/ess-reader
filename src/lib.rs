@@ -7,13 +7,14 @@ use select::predicate::{Name, Text, Predicate};
 use serde::{Serialize, Deserialize};
 use failure::{Error as fError, Fail};
 use chrono::{DateTime, Utc};
+use log::debug;
 
 pub use self::client::*;
 mod client;
 
 type Result<T> = std::result::Result<T, fError>;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub  struct Config {
     pub ip: String,
     pub db: Option<String>,
@@ -162,7 +163,7 @@ impl CurrentStats {
     
         stats.battery = Self::parse_ems(&document)?;
         stats.inverter = Self::parse_inv(&document)?;
-        
+        debug!("Stats fetched");
         Ok(stats)
     }
 
