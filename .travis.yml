@@ -17,13 +17,13 @@ matrix:
     env: TARGET=x86_64-pc-windows-msvc
 
 install:
-- rustup target add $TARGET
 - |
   (
   if [ "$TARGET" = 'armv7-unknown-linux-gnueabihf' ]; then
-    sudo apt-get install gcc-arm-linux-gnueabihf
+    sudo apt-get --reinstall install gcc-arm-linux-gnueabihf libc6 libc6-dev
   fi
   )
+- rustup target add $TARGET
 
 before_deploy:
 - |
