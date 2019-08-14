@@ -50,7 +50,7 @@ struct CmdArgs {
 
 fn main() {
     
-    let mut cfg: Config = confy::load("ess_reader").unwrap();
+    let mut cfg: Config = confy::load("ess-reader").unwrap();
 
     let args = CmdArgs::from_args();
     if let Some(ref ip) = args.ip {
