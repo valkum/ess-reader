@@ -20,7 +20,7 @@ struct CmdArgs {
     /// Debug mode
     #[structopt(short = "d", long = "debug")]
     debug: bool,
-    /// Pass when called from cron or systmed.timed
+    /// Pass this when calling from cron or systmed.timer
     #[structopt(long = "cron")]
     cron: bool,
     /// Output only
@@ -32,13 +32,13 @@ struct CmdArgs {
     /// IP of the ESS
     #[structopt(long = "ess_ip")]
     ess_ip: Option<String>,
-    /// IP of the ESS
+    /// Port the ESS listens on, default 21710
     #[structopt(long = "ess_port")]
     ess_port: Option<String>,
-    /// IP or Hostname of influxdb server
+    /// IP or Hostname of influxDB server
     #[structopt(long = "db_host")]
     db_host: Option<String>,
-    /// Influxdb database name
+    /// InfluxDB database name
     #[structopt(long = "db")]
     db: Option<String>,
     /// User if required

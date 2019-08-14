@@ -22,7 +22,7 @@ $ ess-reader.exe [FLAGS] [OPTIONS]
 $ ess-reader [FLAGS] [OPTIONS]
 
 FLAGS:
-        --cron       Pass when called from cron or systmed.timer
+        --cron       Pass this when calling from cron or systmed.timer
     -d, --debug      Debug mode
     -h, --help       Prints help information
         --json       Output as JSON
@@ -30,11 +30,12 @@ FLAGS:
     -V, --version    Prints version information
 
 OPTIONS:
-        --db <db>                      Influxdb database name
-        --db_host <db_host>            IP or Hostname of influxdb server
+        --db <db>                      InfluxDB database name
+        --db_host <db_host>            IP or Hostname of influxDB server
         --db_password <db_password>    Password if required
         --db_user <db_user>            User if required
-        --ip <ip>                      IP of the ESS
+        --ess_ip <ip>                  IP of the ESS
+        --ess_port <ip>                Port the ESS listens on, default 21710
 ```
 ### Installation
 ESS Reader can be installed in various way.
