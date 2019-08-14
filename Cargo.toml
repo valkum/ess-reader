@@ -3,8 +3,12 @@ name = "ess-reader"
 version = "0.1.0"
 authors = ["Valkum <rudi.floren@gmail.com>"]
 edition = "2018"
+license = "MIT"
+keywords = ["hansol", "ess", "samsung", "photovoltaics"]
+repository = "https://github.com/valkum/ess_reader"
+readme = "README.md"
+include = ["src/**/*", "Cargo.toml", "LICENSE"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 reqwest = "0.9.0"
@@ -22,3 +26,4 @@ chrono = "0.4.0"
 influxdb = { git = "https://github.com/valkum/influxdb-rust", version = "0.0.4" }
 tokio = "0.1.0"
 futures = "0.1.0"
+ctrlc = "3.1.0"

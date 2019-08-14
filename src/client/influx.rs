@@ -15,13 +15,15 @@ pub struct InfluxClient {
 impl<'a> BackendClient<'a> for InfluxClient {
     fn new(config: &'a Config) -> Self {
         
-        let auth = InfluxDbAuthentication::new(
+        let auth = if config.db_user.is_some() && config.db_password.is_some() {
+            Some(InfluxDbAuthentication::new(
             config.db_user.as_ref().unwrap(),
             config.db_password.as_ref().unwrap()
-        );
+            ))
+        } else { None };
         let db_host = config.db_host.as_ref().unwrap();
 
-        let client =  InfluxDbClient::new(db_host, config.db.as_ref().unwrap(), Some(auth));;
+        let client =  InfluxDbClient::new(db_host, config.db.as_ref().unwrap(), auth);
         InfluxClient {
             client
         }
@@ -51,7 +53,7 @@ impl<'a> BackendClient<'a> for InfluxClient {
         let f2 = self.client.query(&measurement2);
         let f = f1.join(f2);
         let mut rt = tokio::runtime::current_thread::Runtime::new().unwrap();
-        debug!("Send to InfluxDB");
+        debug!("Send measurement to InfluxDB");
         rt.block_on(f).map(|_| ()).map_err(|e| {
             ClientError::ConnectionError(e.to_string())
         })

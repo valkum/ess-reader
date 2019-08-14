@@ -40,6 +40,8 @@ impl Default for  Config {
 pub enum Error {
     #[fail(display = "Connection Error: {}", _0)]
     Connection(#[fail(cause)] reqwest::Error),
+    #[fail(display = "Config Error: {}", _0)]
+    Config(String),
     #[fail(display = "{}", _0)]
     Parse(#[fail(cause)] std::io::Error),
     #[fail(display = "Float Parsing Error: {}", _0)]
@@ -151,8 +153,15 @@ enum EmsParseState {
 impl CurrentStats {
 
     pub fn get_from(ip: &String) -> Result<CurrentStats> {
+        debug!("Get stats from ess");
         let url = format!("http://{}:21710/f0", ip);
-        let resp = reqwest::get(&url)?;
+        let resp = match reqwest::get(&url) {
+            Ok(resp) => resp,
+            Err(err) => {
+                debug!("Failed to get stats from {}", url);
+                return Err(err.into())
+            }
+        };
 
 
         let document = Document::from_read(resp)?;
@@ -160,10 +169,9 @@ impl CurrentStats {
         let mut stats = CurrentStats::default();
         stats.time = Utc::now();
 
-    
+        debug!("Parse stats");
         stats.battery = Self::parse_ems(&document)?;
         stats.inverter = Self::parse_inv(&document)?;
-        debug!("Stats fetched");
         Ok(stats)
     }
 

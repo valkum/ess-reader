@@ -1,8 +1,8 @@
 # File /usr/lib/systemd/system/ess-reader.service
 [Unit]
-Description=ESS Reader
+Description=ESS Reader timer
 
 [Service]
 Type=oneshot
 Nice=19
-ExecStart=/usr/bin/dnf-automatic /etc/dnf/automatic.conf --timer
+ExecStart=/usr/bin/ess-reader --cron

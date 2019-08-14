@@ -1,6 +1,6 @@
 # File /usr/lib/systemd/system/ess-reader.timer
 [Unit]
-Description=dnf-automatic timer
+Description=ess-reader timer
 
 [Timer]
 OnUnitActiveSec=60
