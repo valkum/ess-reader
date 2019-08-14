@@ -1,12 +1,21 @@
 ESS Reader (ess-reader)
 -----------------------
-
+<p align="center">
+    <!-- <a href="https://crates.io/crates/influxdb">
+        <img src="https://img.shields.io/crates/v/influxdb.svg"/>
+    </a> -->
+    <a href="https://travis-ci.org/valkum/ess_reader">
+        <img src="https://travis-ci.org/valkum/ess_reader.svg?branch=master" alt='Build Status' />
+    </a>
+    <a href="https://www.rust-lang.org/en-US/">
+        <img src="https://img.shields.io/badge/Made%20with-Rust-orange.svg" alt='Build with Rust' />
+    </a>
+</p>
 ESS Reader reads various stats from the system page of Hansol Technics AIO (ex-Samsung ESS AIO) energy storage
 and stores them in a database.
 
-This Repository and rust crate consists of the ess_reader library and the ess-reader binary.
 
-Currently only influxdb is supported. May support other ESS some day.
+Currently only influxDB is supported. May support other ESS some day.
 ### Usage
 ```
 $ ess-reader.exe [FLAGS] [OPTIONS]

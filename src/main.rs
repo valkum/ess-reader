@@ -30,8 +30,11 @@ struct CmdArgs {
     #[structopt(long = "json")]
     json: bool,
     /// IP of the ESS
-    #[structopt(long = "ip")]
-    ip: Option<String>,
+    #[structopt(long = "ess_ip")]
+    ess_ip: Option<String>,
+    /// IP of the ESS
+    #[structopt(long = "ess_port")]
+    ess_port: Option<String>,
     /// IP or Hostname of influxdb server
     #[structopt(long = "db_host")]
     db_host: Option<String>,
@@ -53,9 +56,16 @@ fn main() {
     let mut cfg: Config = confy::load("ess-reader").unwrap();
 
     let args = CmdArgs::from_args();
-    if let Some(ref ip) = args.ip {
-        cfg.ip = ip.clone();
+    if let Some(ref ess_ip) = args.ess_ip {
+        cfg.ess_ip = ess_ip.clone();
     }
+    if let Some(ref ess_port) = args.ess_port {
+        cfg.ess_port = ess_port.clone();
+    }
+    if cfg.ess_port.is_empty() {
+        cfg.ess_port = "21710".to_string();
+    }
+
     let mut logger = fern::Dispatch::new();
     logger = if args.debug {
         logger
@@ -93,7 +103,7 @@ fn main() {
         cfg.db_password = args.db_password.clone();
     }
    
-    if cfg.ip.is_empty() {
+    if cfg.ess_ip.is_empty() {
         println!("No IP of ESS found");
         return
     }
@@ -107,7 +117,8 @@ fn main() {
 }
 
 fn run(config: &Config, args: &CmdArgs) -> Result<(), Error> {
-    let stats = CurrentStats::get_from(&config.ip)?;
+    let address = format!("{}:{}", config.ess_ip, config.ess_port);
+    let stats = CurrentStats::get_from(&address)?;
     if args.print && !args.json {
         let prod_table = table!(
             ["", "Voltage", "Current", "Power"],
@@ -148,7 +159,7 @@ fn run(config: &Config, args: &CmdArgs) -> Result<(), Error> {
 
         while running.load(Ordering::SeqCst) {
             // This loop will run once every second
-            let stats = CurrentStats::get_from(&config.ip)?;
+            let stats = CurrentStats::get_from(&address)?;
             client.send(&stats)?;
             thread::sleep(interval);
         }
@@ -156,4 +167,5 @@ fn run(config: &Config, args: &CmdArgs) -> Result<(), Error> {
     }
     Ok(())
 }
+
 

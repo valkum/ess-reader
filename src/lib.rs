@@ -16,18 +16,21 @@ type Result<T> = std::result::Result<T, fError>;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub  struct Config {
-    pub ip: String,
+    pub ess_ip: String,
+    pub ess_port: String,
     pub db: Option<String>,
     pub db_user: Option<String>,
     pub db_password: Option<String>,
     pub db_host: Option<String>,
     // Todo allow different databases
+    // Todo split out backend config from ess config
     // pub db_driver: , 
 }
 impl Default for  Config {
     fn default() -> Self { 
         Self { 
-            ip: "".into(),
+            ess_ip: "".into(),
+            ess_port: "21710".into(),
             db: None,
             db_user: None,
             db_password: None,
@@ -152,9 +155,9 @@ enum EmsParseState {
 
 impl CurrentStats {
 
-    pub fn get_from(ip: &String) -> Result<CurrentStats> {
+    pub fn get_from(address: &str) -> Result<CurrentStats> {
         debug!("Get stats from ess");
-        let url = format!("http://{}:21710/f0", ip);
+        let url = format!("http://{}/f0", address);
         let resp = match reqwest::get(&url) {
             Ok(resp) => resp,
             Err(err) => {
@@ -247,3 +250,43 @@ impl CurrentStats {
 }
 
 
+#[cfg(test)]
+mod tests {
+  use mockito::mock;
+
+  #[test]
+  fn test_parsing() {
+    let _m = mock("GET", "/f0")
+      .with_status(201)
+      .with_header("content-type", "text/plain")
+      .with_body("<html>
+<body>
+    <table>
+        <tr><td>
+            <table>
+                <tr><td>EMS Control MODE</td></tr>
+                <tr>
+                    <td>GRID_P</td>
+                    <td>214</td></tr>
+                <tr><td>BT_SOC</td><td>50.0</td></tr>
+                <tr><td></td></tr>
+            </table>
+        </td>
+    <td><table>
+        <tr><td>PCS Sensing Data</td></tr>
+        <tr>
+            <td></td>
+            <td></td>
+        </tr>
+    </table></td></tr>
+    </table>
+</body>
+</html>
+")
+      .create();
+
+    let stats = super::CurrentStats::get_from(&mockito::server_address().to_string()).unwrap();
+    assert_eq!(214.0, stats.battery.withdrawal);
+    assert_eq!(50.0, stats.battery.filled);
+  }
+}

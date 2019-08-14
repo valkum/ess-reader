@@ -27,3 +27,7 @@ influxdb = { git = "https://github.com/valkum/influxdb-rust", version = "0.0.4" 
 tokio = "0.1.0"
 futures = "0.1.0"
 ctrlc = "3.1.0"
+
+
+[dev-dependencies]
+mockito = "0.20.0"
