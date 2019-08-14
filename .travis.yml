@@ -2,61 +2,54 @@ rust: stable
 language: rust
 
 script:
-  - cargo build 
-  - cargo test 
+- cargo build
+- cargo test
 
 matrix:
   include:
-    - os: linux
-      env: TARGET=armv7-unknown-linux-gnueabihf
-    - os: linux
-      env: TARGET=x86_64-unknown-linux-gnu
-    - os: osx
-      env: TARGET=x86_64-apple-darwin
-    - os: windows
-      env: TARGET=x86_64-pc-windows-msvc
+  - os: linux
+    env: TARGET=armv7-unknown-linux-gnueabihf
+  - os: linux
+    env: TARGET=x86_64-unknown-linux-gnu
+  - os: osx
+    env: TARGET=x86_64-apple-darwin
+  - os: windows
+    env: TARGET=x86_64-pc-windows-msvc
 
 install:
-  - rustup target add $TARGET
-  - |
-    (
-    if [ "$TARGET" = 'armv7-unknown-linux-gnueabihf' ]; then
-      sudo apt-get install gcc-arm-linux-gnueabihf
-    fi
-    )
-      
+- rustup target add $TARGET
+- |
+  (
+  if [ "$TARGET" = 'armv7-unknown-linux-gnueabihf' ]; then
+    sudo apt-get install gcc-arm-linux-gnueabihf
+  fi
+  )
+
 before_deploy:
-  - |
-    (
-    cargo build --release --target $TARGET    
-    if [ "$TRAVIS_OS_NAME" = 'windows' ]; then
-      cp target/${TARGET}/release/ess_reader.exe ess_reader-${TRAVIS_TAG}-${TARGET}.exe
-    else
-      cp target/${TARGET}/release/ess_reader ess_reader-${TRAVIS_TAG}-${TARGET}
-    fi
-    )
-    
-deploy:
-  api_key:
-    secure: "..."
+- |
+  (
+  cargo build --release --target $TARGET    
+  if [ "$TRAVIS_OS_NAME" = 'windows' ]; then
+    cp target/${TARGET}/release/ess-reader.exe ess-reader-${TRAVIS_TAG}-${TARGET}.exe
+  else
+    cp target/${TARGET}/release/ess-reader ess-reader-${TRAVIS_TAG}-${TARGET}
+  fi
+  )
 
-  file: ess_reader-${TRAVIS_TAG}-${TARGET}*
-  file_glob: true
-
-  on:
-    tags: true
-
-  provider: releases
-  skip_cleanup: true
-  
 branches:
   only:
-    # Pushes and PR to the master branch
-    - master
-    # Ruby regex to match tags.
-    # Required, or travis won't trigger deploys when a new tag is pushed.
-    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
-    
+  - master
+  - "/^v\\d+\\.\\d+(\\.\\d+)?(-\\S*)?$/"
+
 notifications:
   email:
     on_success: never
+deploy:
+  provider: releases
+  api_key:
+    secure: FSBnyOzyo9FEsZ+IY2oYBtpsswtSFmmioMNL5NhMRSi40wk1vCxSJ8DrHxraVHh7cmPbHYAwLBK8K8M/9ZqV9okYTqGmvvwRx+7n+N2jFqsLrxoXJDexvqVAlfU5PZd3TQ60iHPgQuFJMdLEZ0zO4bF2H52uhx44IBVxMP+rxQ13JMKHxy0zjmEfXBXCvkNL7RvcKF60HPK+TIZe18g+nocsyEzFmRNu72Uk7ew/MvumlxOT3rjDAdc3J3BTpy2xoYFnHmihNm/3V8PdKCpdejRd6/SjsGvA9UzUmZweA3muWHw4TyX7/4YHRLGkTsiIfuJor5uW8r2KbF8ZML6C4UswGQrKDogLwIkjwamyXJJ4B3/v4jQ+lAE0gEmRQ2wCPux2SBqKPGd4lcr3tROshhaEVO0a0Ppsz0MQD9yVtiSoVn0fPJ+LVLSwIuGj+HaT9nB1fqzOX+4GZWBAYqEhbQsdNssqiSJv3qaMTW+eqU3mnrYtiY9/5qvqEn0PTpBaJWUIG7iHayiGPgjGHh24PHOni8A3JU9Oc5kNi5pPjTmj2o8oZZiFI8r5JfhknWXUQ3ziYPAg1LUpS1EBiMrTwh5WY++cUIUoSffJRS7ig4ABr5Uxogm+uHJqOrmasvuCuCjLFzn/AZn3FXSy+Q1xEKI0+z71AaywqffGub0Qhq4=
+  file: ess-reader-${TRAVIS_TAG}-${TARGET}*
+  file_glob: true
+  on:
+    tags: true
+    repo: valkum/ess_reader
