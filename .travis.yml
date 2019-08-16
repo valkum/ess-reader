@@ -21,7 +21,7 @@ install:
   (
   sudo apt-get update;
   if [ "$TARGET" = 'armv7-unknown-linux-gnueabihf' ]; then
-    sudo apt-get --reinstall install gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libc6-armhf-cross libc6-dev-armhf-cross libssl-dev
+    sudo apt-get --reinstall install gcc-arm-linux-gnueabihf binutils-arm-linux-gnueabihf libc6-armhf-cross libc6-dev-armhf-cross
   fi
   )
 - rustup target add $TARGET
