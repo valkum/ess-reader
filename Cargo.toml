@@ -11,7 +11,7 @@ include = ["src/**/*", "Cargo.toml", "LICENSE"]
 
 
 [dependencies]
-reqwest = "0.9.0"
+reqwest = { version = "0.9.0", default-features = false, features = ["default-tls-vendored"] }
 select = {git = "https://github.com/valkum/select.rs", version = "0.5.0"}
 
 confy = "0.3.0"
