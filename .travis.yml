@@ -51,6 +51,7 @@ deploy:
     secure: FSBnyOzyo9FEsZ+IY2oYBtpsswtSFmmioMNL5NhMRSi40wk1vCxSJ8DrHxraVHh7cmPbHYAwLBK8K8M/9ZqV9okYTqGmvvwRx+7n+N2jFqsLrxoXJDexvqVAlfU5PZd3TQ60iHPgQuFJMdLEZ0zO4bF2H52uhx44IBVxMP+rxQ13JMKHxy0zjmEfXBXCvkNL7RvcKF60HPK+TIZe18g+nocsyEzFmRNu72Uk7ew/MvumlxOT3rjDAdc3J3BTpy2xoYFnHmihNm/3V8PdKCpdejRd6/SjsGvA9UzUmZweA3muWHw4TyX7/4YHRLGkTsiIfuJor5uW8r2KbF8ZML6C4UswGQrKDogLwIkjwamyXJJ4B3/v4jQ+lAE0gEmRQ2wCPux2SBqKPGd4lcr3tROshhaEVO0a0Ppsz0MQD9yVtiSoVn0fPJ+LVLSwIuGj+HaT9nB1fqzOX+4GZWBAYqEhbQsdNssqiSJv3qaMTW+eqU3mnrYtiY9/5qvqEn0PTpBaJWUIG7iHayiGPgjGHh24PHOni8A3JU9Oc5kNi5pPjTmj2o8oZZiFI8r5JfhknWXUQ3ziYPAg1LUpS1EBiMrTwh5WY++cUIUoSffJRS7ig4ABr5Uxogm+uHJqOrmasvuCuCjLFzn/AZn3FXSy+Q1xEKI0+z71AaywqffGub0Qhq4=
   file: ess-reader-${TRAVIS_TAG}-${TARGET}*
   file_glob: true
+  skip_cleanup: true
   on:
     tags: true
     repo: valkum/ess_reader
