@@ -23,7 +23,7 @@ log = "0.4.0"
 failure = "0.1.0"
 serde = "1.0.0"
 chrono = "0.4.0"
-influxdb = { git = "https://github.com/valkum/influxdb-rust", version = "0.0.4" }
+influxdb = { version = "0.0.4" }
 tokio = "0.1.0"
 futures = "0.1.0"
 ctrlc = "3.1.0"
@@ -31,3 +31,13 @@ ctrlc = "3.1.0"
 
 [dev-dependencies]
 mockito = "0.20.0"
+
+[package.metadata.deb]
+maintainer = "Rudi Floren <rudi.floren@gmail.com>"
+copyright = "2019, Rudi Floren <rudi.floren@gmail.com>"
+depends = "$auto, systemd"
+assets = [
+    ["extras/ess-reader.timer", "lib/systemd/system/ess-reader.timer.d/ess-reader-systemd.conf", "644"],
+    ["extras/ess-reader.service", "lib/systemd/system/ess-reader.service.d/ess-reader-systemd.conf", "644"],
+    ["target/release/ess-reader", "usr/bin/", "755"]
+]

@@ -1,5 +1,5 @@
 use influxdb::query::{InfluxDbQuery, Timestamp};
-use influxdb::client::{InfluxDbAuthentication, InfluxDbClient};
+use influxdb::client::{InfluxDbClient};
 use tokio;
 
 use crate::{Config, CurrentStats};
@@ -14,22 +14,20 @@ pub struct InfluxClient {
 
 impl<'a> BackendClient<'a> for InfluxClient {
     fn new(config: &'a Config) -> Self {
-        
-        let auth = if config.db_user.is_some() && config.db_password.is_some() {
-            Some(InfluxDbAuthentication::new(
-            config.db_user.as_ref().unwrap(),
-            config.db_password.as_ref().unwrap()
-            ))
-        } else { None };
+        let client;
         let db_host = config.db_host.as_ref().unwrap();
+        let auth = if config.db_user.is_some() && config.db_password.is_some() {
+            let client = InfluxDbClient::new(db_host, config.db.as_ref().unwrap()).with_auth(config.db_user, config.db_password);
+        } else { 
+            let client = InfluxDbClient::new(db_host, config.db.as_ref().unwrap());
+        };
 
-        let client =  InfluxDbClient::new(db_host, config.db.as_ref().unwrap(), auth);
         InfluxClient {
             client
         }
     }
     fn send(&self, data: &CurrentStats) -> Result<(), ClientError> {
-        let measurement = InfluxDbQuery::write_query(Timestamp::NOW, "battery")
+        let total_measurement = InfluxDbQuery::write_query(Timestamp::NOW, "battery")
             .add_field("filled", data.battery.filled)
             .add_field("battery", data.battery.battery)
             .add_field("pv", data.battery.pv)
@@ -38,19 +36,27 @@ impl<'a> BackendClient<'a> for InfluxClient {
             .add_field("inverter", data.battery.inverter)
             .add_field("load", data.battery.load)
             .add_field("temperature", data.battery.temperature);
-        let measurement2 = InfluxDbQuery::write_query(Timestamp::NOW, "inverter")
-            .add_field("pv1_voltage", data.inverter.pv1.voltage)
-            .add_field("pv1.current", data.inverter.pv1.current)
-            .add_field("pv1.power", data.inverter.pv1.power)
-            .add_field("pv2.voltage", data.inverter.pv2.voltage)
-            .add_field("pv2.current", data.inverter.pv2.current)
-            .add_field("pv2.power", data.inverter.pv2.power)
+        let inverter_pv1_m = InfluxDbQuery::write_query(Timestamp::NOW, "inverter")
+            .add_tag("stat", "üv1")
+            .add_field("voltage", data.inverter.pv1.voltage)
+            .add_field("current", data.inverter.pv1.current)
+            .add_field("power", data.inverter.pv1.power);
+        let inv_q1 = self.client.query(&inverter_pv1_m);
+        let inverter_pv2_m = InfluxDbQuery::write_query(Timestamp::NOW, "inverter")
+            .add_tag("stat", "pv2")
+            .add_field("voltage", data.inverter.pv2.voltage)
+            .add_field("current", data.inverter.pv2.current)
+            .add_field("power", data.inverter.pv2.power);
+        let inv_q2 = self.client.query(&inverter_pv2_m);
+        let inverter_inv_m = InfluxDbQuery::write_query(Timestamp::NOW, "inverter")
+            .add_tag("stat", "inv")
             .add_field("inv.voltage", data.inverter.inv.voltage)
             .add_field("inv.current", data.inverter.inv.current)
             .add_field("inv.power", data.inverter.inv.power);
+        let inv_q3 = self.client.query(&inverter_inv_m);
 
-        let f1 = self.client.query(&measurement);
-        let f2 = self.client.query(&measurement2);
+        let f1 = self.client.query(&total_measurement);
+        let f2 = inv_q1.join3(inv_q2, inv_q3);
         let f = f1.join(f2);
         let mut rt = tokio::runtime::current_thread::Runtime::new().unwrap();
         debug!("Send measurement to InfluxDB");

@@ -15,7 +15,7 @@ mod client;
 type Result<T> = std::result::Result<T, fError>;
 
 #[derive(Serialize, Deserialize, Debug)]
-pub  struct Config {
+pub struct Config {
     pub ess_ip: String,
     pub ess_port: String,
     pub db: Option<String>,

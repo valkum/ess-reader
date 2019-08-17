@@ -3,7 +3,7 @@ use confy;
 use prettytable::{Table, row, cell, table};
 use failure::Error;
 
-use ess_reader::{Error as EssError, Config, CurrentStats, BackendClient};
+use crate::{Error as EssError, Config, CurrentStats, BackendClient};
 use fern;
 use log;
 use log::{warn, debug};
