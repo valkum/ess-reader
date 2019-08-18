@@ -25,11 +25,16 @@ install:
   fi
   )
 - rustup target add $TARGET
+- |
+  (
+  if [ ! "$TRAVIS_OS_NAME" = 'windows' ]; then
+    cargo install cargo-deb
+  )
 
 before_deploy:
 - |
   (
-  cargo build --release --target $TARGET    
+  cargo build --release --target $TARGET
   if [ "$TRAVIS_OS_NAME" = 'windows' ]; then
     cp target/${TARGET}/release/ess-reader.exe ess-reader-${TRAVIS_TAG}-${TARGET}.exe
   else

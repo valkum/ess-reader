@@ -14,12 +14,12 @@ pub struct InfluxClient {
 
 impl<'a> BackendClient<'a> for InfluxClient {
     fn new(config: &'a Config) -> Self {
-        let client;
         let db_host = config.db_host.as_ref().unwrap();
-        let auth = if config.db_user.is_some() && config.db_password.is_some() {
-            let client = InfluxDbClient::new(db_host, config.db.as_ref().unwrap()).with_auth(config.db_user, config.db_password);
+        let client = if config.db_user.is_some() && config.db_password.is_some() {
+            InfluxDbClient::new(db_host, config.db.as_ref().unwrap())
+                .with_auth(config.db_user.as_ref().unwrap(), config.db_password.as_ref().unwrap())
         } else { 
-            let client = InfluxDbClient::new(db_host, config.db.as_ref().unwrap());
+            InfluxDbClient::new(db_host, config.db.as_ref().unwrap())
         };
 
         InfluxClient {
@@ -37,7 +37,7 @@ impl<'a> BackendClient<'a> for InfluxClient {
             .add_field("load", data.battery.load)
             .add_field("temperature", data.battery.temperature);
         let inverter_pv1_m = InfluxDbQuery::write_query(Timestamp::NOW, "inverter")
-            .add_tag("stat", "üv1")
+            .add_tag("stat", "pv1")
             .add_field("voltage", data.inverter.pv1.voltage)
             .add_field("current", data.inverter.pv1.current)
             .add_field("power", data.inverter.pv1.power);
