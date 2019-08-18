@@ -25,11 +25,6 @@ install:
   fi
   )
 - rustup target add $TARGET
-- |
-  (
-  if [ ! "$TRAVIS_OS_NAME" = 'windows' ]; then
-    cargo install cargo-deb
-  )
 
 before_deploy:
 - |
